@@ -12,16 +12,23 @@ user = g.get_user()
 # Create the parser
 parser = argparse.ArgumentParser(prog='gitPy',
                                  usage='%(prog)s [options] ',   
-                                 description='Browse your git through the terminal')
+                                 description='Browse your git through the terminal',
+                                 formatter_class=lambda prog: argparse.HelpFormatter(prog,max_help_position=80))
 # Adding arguments
-parser.add_argument('-r', '--repos', 
+parser.add_argument('-l', '--repos', 
                     action='store_true',
                     help='List all your repos')
 parser.add_argument('-b', '--branches',
-                    help='get all branches of a repository - Pass the repository\'s full name',
+                    help='get all branches of a repository',
+                    type=str)
+parser.add_argument('-r', '--releases',
+                    help='get all releases of a repository',
                     type=str)
 parser.add_argument('-i', '--issues',
-                    help='Get issues from repository',
+                    help='Get open issues from a repository',
+                    type=str)
+parser.add_argument('-pr', '--prequest',
+                    help='Get open PR\'s from a repository',
                     type=str)
 # Perhaps add a path?
 parser.add_argument('-c', '--clone',
@@ -40,11 +47,10 @@ if len(sys.argv) == 1:
     parser.parse_args(['-h'])
 # ========================================= #
 def get_repos():
-# Print all repositories with prog language
+# Print all repositories with time of last update
   string = "Updated at:"
   for repo in g.get_user().get_repos():
      print(f'{repo.full_name.ljust(50)} {string} {repo.updated_at.strftime("%Y-%m-%d %H:%M:%S").rjust(15)}')
-#     print(repo.full_name, "\tLast Update at:", repo.updated_at)
      print("-"*30)
 
 
@@ -56,6 +62,35 @@ def get_branches():
     branches = list(repo.get_branches())
     for branch in branches:
         print(branch.name)
+
+# ========================================= #
+# List releases for selected Repository
+# -----------------------
+def get_releases():
+    repo = g.get_repo(args.releases)
+    string = "Release:"
+    releases = repo.get_releases()
+    for release in releases:
+        try:
+            print(f'{string.ljust(15)} {release.title.center(15)[:15]} {release.created_at.strftime("%Y-%m-%d").rjust(15)}')
+        except AttributeError:
+            print("Could not catch all releases, aborting")
+            sys.exit(1)
+
+# ========================================= #
+# List active PR's for selected Repository
+# -----------------------
+def get_pullRequests():
+    repo = g.get_repo(args.prequest)
+    string = "Created at:"
+    pulls = repo.get_pulls()
+    print("Open Pull Requests...")
+    print("-"*30)
+    if pulls.totalCount == 0:
+        print("No Pull Requests found")
+    else:
+        for pull in pulls:
+            print(f'{pull.title.ljust(70)[:70]} {string.center(15)} {pull.created_at.strftime("%Y-%m-%d")}')
 
 # ========================================= #
 # Clone selected Repository, works using ssh cloning
@@ -97,7 +132,7 @@ def list_issues():
     else:
         for issue in open_issues:
             print(issue.title.ljust(50)[:50], nr, '\x1b]8;;%s\x1b\\%s\x1b]8;;\x1b\\' %
-            ( issue.html_url , issue.number ) )
+            ( issue.html_url , str(issue.number).center(30) ), "Last update: ", issue.updated_at.strftime("%Y-%m-%d"))
             
 # ========================================= #
 # Delete a repository
@@ -124,24 +159,47 @@ def delete_repository():
 
 def main():
     if args.repos:
-      get_repos()
+      try:
+        get_repos()
+      except github.BadCredentialsException:
+          print("Incorrect or expired token, please add a new one ")
     if args.branches:
       try:
         get_branches()
       except github.UnknownObjectException:
           print("Repository not found, please try again") 
-          sys.exit(1) 
       except github.BadCredentialsException:
-          print("Please add an Access token before running")
-          sys.exit(1)
+          print("Incorrect or expired token, please add a new one ")
+    if args.releases:
+      try:
+        get_releases()
+      except github.BadCredentialsException:
+          print("Incorrect or expired token, please add a new one ")
     if args.issues:
+      try:
         list_issues()
+      except github.BadCredentialsException:
+          print("Incorrect or expired token, please add a new one ")
     if args.clone:
+      try:
         repo_clone()
+      except github.BadCredentialsException:
+          print("Incorrect or expired token, please add a new one ")
     if args.init:
+      try:
         repo_init()
+      except github.BadCredentialsException:
+          print("Incorrect or expired token, please add a new one ")
     if args.delete:
+      try:
         delete_repository()
+      except github.BadCredentialsException:
+          print("Incorrect or expired token, please add a new one ")
+    if args.prequest:
+      try:
+        get_pullRequests()
+      except github.BadCredentialsException:
+          print("Incorrect or expired token, please add a new one ")
 
 if __name__ == "__main__":
     main()
