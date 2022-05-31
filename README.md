@@ -14,21 +14,13 @@ usage: gitPy [options]
 Browse your git through the terminal
 
 optional arguments:
-  -h, --help            show this help message and exit
-  -g, --repos           List all your repos
-  -b BRANCHES, --branches BRANCHES
-                        get all branches of a repository - Pass the
-                        repository's full name
-  -r RELEASES, --releases RELEASES
-                        get all releases of a repository - Pass the
-                        repository's full name
-  -i ISSUES, --issues ISSUES
-                        Get open issues from a repository
-  -pr PREQUEST, --prequest PREQUEST
-                        Get open PR's from a repository
-  -c CLONE, --clone CLONE
-                        Clone a repository
-  --init INIT           Initiate a new repository
-  -d DELETE, --delete DELETE
-                        Delete a repository
+  -h, --help                         show this help message and exit
+  -l, --repos                        List all your repos
+  -b BRANCHES, --branches BRANCHES   get all branches of a repository
+  -r RELEASES, --releases RELEASES   get all releases of a repository
+  -i ISSUES, --issues ISSUES         Get open issues from a repository
+  -pr PREQUEST, --prequest PREQUEST  Get open PR's from a repository
+  -c CLONE, --clone CLONE            Clone a repository
+  --init INIT                        Initiate a new repository
+  -d DELETE, --delete DELETE         Delete a repository
 ```
