@@ -70,6 +70,8 @@ def get_releases():
     repo = g.get_repo(args.releases)
     string = "Release:"
     releases = repo.get_releases()
+    if releases.totalCount == 0:
+        print(f'\033[1m{repo.full_name}\033[0m does not have any releases')
     for release in releases:
         try:
             print(f'{string.ljust(15)} {release.title.center(15)[:15]} {release.created_at.strftime("%Y-%m-%d").rjust(15)}')
@@ -90,8 +92,8 @@ def get_pullRequests():
         print("No Pull Requests found")
     else:
         for pull in pulls:
-            print(f'{pull.title.ljust(70)[:70]} {string.center(15)} {pull.created_at.strftime("%Y-%m-%d")}')
-
+            print('\x1b]8;;%s\x1b\\%s\x1b]8;;\x1b\\' % ( pull.html_url, pull.title.ljust(70)[:70]), string.center(15), pull.created_at.strftime("%Y-%m-%d"))
+        
 # ========================================= #
 # Clone selected Repository, works using ssh cloning
 # Change to a Try except and have it try https afterwards?
