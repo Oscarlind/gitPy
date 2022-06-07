@@ -142,7 +142,7 @@ def list_issues():
 def delete_repository():
     repo = user.login + "/" + args.delete.replace(" ", "")
     print("Preparing to delete repository ", repo)
-    answer = input("Continue? \n")
+    answer = input("Continue? (yes/no) \n")
     if answer.lower() in ["y","yes"]:
         try:
             repo_to_delete = g.get_repo(repo)
