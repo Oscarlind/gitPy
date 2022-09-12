@@ -6,7 +6,6 @@ import github
 import configparser
 
 
-# Find a way to do this in a cleaner way?
 config = configparser.ConfigParser()
 config.read("config.ini")
 gToken = config.get("variables", "token")
