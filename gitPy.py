@@ -3,10 +3,15 @@ import os
 import sys
 from github import Github
 import github
+import configparser
 
 
 # Find a way to do this in a cleaner way?
-g = Github('<ADD AUTH TOKEN HERE>')
+config = configparser.ConfigParser()
+config.read("config.ini")
+gToken = config.get("variables", "token")
+g = Github(gToken)
+#g = Github('<TOKEN>')
 user = g.get_user()
 
 # Create the parser
@@ -159,7 +164,7 @@ def delete_repository():
         print("Please try again")
         sys.exit(1)
 
-def main():
+def main(): 
     if args.repos:
       try:
         get_repos()
